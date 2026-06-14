@@ -1,0 +1,40 @@
+spring:
+  # Disable web server — this MCP server uses stdio transport
+  main:
+    web-application-type: none
+
+  # SMTP mail configuration
+  # Set via environment variables in Claude Desktop config
+  mail:
+    host: ${SMTP_HOST:smtp.example.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
+    default-encoding: UTF-8
+
+  # MCP Server — uses stdio transport (stdin/stdout)
+  # Claude Desktop launches this JAR directly; no HTTP port needed
+  ai:
+    mcp:
+      server:
+        name: "email-mcp-server"
+        version: "1.0.0"
+        type: "SYNC"
+        stdio: true          # REQUIRED: enable stdio transport (default is false!)
+        instructions: |
+          This MCP server provides email sending capabilities via SMTP.
+          Use the sendEmail tool to send plain text or HTML emails to recipients.
+
+logging:
+  level:
+    com.xm.tools: DEBUG
+    # MCP protocol messages go to stderr so they don't interfere with stdout
+    org.springframework.ai.mcp: WARN
